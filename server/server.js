@@ -5,8 +5,7 @@ import express from "express";
 dotenv.config();
 const app = express();
 
-app.use(express.json()); // Middleware to parse JSON bodies
-
+app.use(express.json());
 
 const model = new ChatOpenAI({
     azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
@@ -15,14 +14,21 @@ const model = new ChatOpenAI({
     azureOpenAIApiDeploymentName: process.env.ENGINE_NAME,
 });
 
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 app.get('/joke', async (req, res) => {
     try {
         const joke = await model.invoke("Tell me a Javascript joke!");
         console.log(joke.content);
         res.json({ joke: joke.content });
     } catch (error) {
-        console.error("Fout bij het ophalen van de grap:", error.message);
-        res.status(500).json({ error: "Er is een fout opgetreden bij het ophalen van de grap" });
+        console.error("Error fetching joke:", error.message);
+        res.status(500).json({ error: "An error occurred while fetching the joke" });
     }
 });
 
@@ -35,7 +41,6 @@ app.post('/chat', async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        // Here you can send the 'chat' to the model
         const response = await model.invoke(chat);
 
         res.status(200).json({ response: response.content });
@@ -45,11 +50,8 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+const PORT = process.env.EXPRESS_PORT
 
-try {
-    app.listen(process.env.EXPRESS_PORT, () => {
-        console.log(`Server started on port ${process.env.EXPRESS_PORT}`);
-    });
-} catch (error) {
-    console.log(error);
-}
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+});
