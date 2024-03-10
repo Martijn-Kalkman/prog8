@@ -10,8 +10,9 @@ document.addEventListener("DOMContentLoaded", function() {
         appendMessage(userMessage, true);
         userInput.value = "";
 
+
         try {
-            const response = await fetch("http://localhost:8000/chat", {
+            const response = await fetch(`http://localhost:8000/chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -32,9 +33,14 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+
     function appendMessage(message, isUser) {
         const messageDiv = document.createElement("div");
-        messageDiv.className = isUser ? "message user" : "message ai";
+        if (isUser) {
+            messageDiv.className = "message user bg-blue-500 text-white rounded-lg p-2 mb-2";
+        } else {
+            messageDiv.className = "message ai bg-gray-200 text-black rounded-lg p-2 mb-2";
+        }
         messageDiv.textContent = message;
         chatBox.appendChild(messageDiv);
         chatBox.scrollTop = chatBox.scrollHeight;

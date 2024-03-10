@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { ChatOpenAI } from "@langchain/openai";
 import express from "express";
 
+
 dotenv.config();
 const app = express();
 
@@ -20,6 +21,8 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
+
+
 
 app.get('/joke', async (req, res) => {
     try {
@@ -50,8 +53,11 @@ app.post('/chat', async (req, res) => {
     }
 });
 
-const PORT = process.env.EXPRESS_PORT
-
-app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
-});
+try {
+    app.listen(process.env.EXPRESS_PORT, () => {
+      console.log(`Server started on port ${process.env.EXPRESS_PORT}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  
